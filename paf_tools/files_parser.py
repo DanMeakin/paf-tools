@@ -52,13 +52,13 @@ with no whitespace between the key and value.
 
 """
 import os
-from paf.structure import *
+from paf_tools.structure import *
 
 #Define the valid file types for parsing.
 VALID_FILETYPES = [
         'ADDRESS', 'BUILDING_NAME', 'LOCALITY', 'MAILSORT', 
         'ORGANISATION', 'SUB_BUILDING_NAME', 'THOROUGHFARE', 
-        'THOROUGHFARE_DESCRIPTOR', 'WELSH_ADDRESS'
+        'THOROUGHFARE_DESCRIPTOR', #'WELSH_ADDRESS'
         ]
 #Define the data types available for each filetype.
 VALID_DATATYPES = [
@@ -139,8 +139,8 @@ def parse_file(path, filetype):
                     #Skip headers and footers.
                     parsed_line = parse_line(line, filetype)
                     if (parsed_line[0] and 
-                            not (parsed_line[0] == "00000000" or 
-                                 parsed_line[0] == "99999999")):
+                            not (parsed_line[0] == 0 or 
+                                 parsed_line[0] == 99999999)):
                         yield parsed_line
 
 def parse_line(line, filetype):
@@ -156,4 +156,12 @@ def parse_line(line, filetype):
         splits_indices.append(x + splits_indices[-1]) 
     split_line = (line[splits_indices[x]:splits_indices[x+1]].strip()
                   for x in range(len(splits_indices)-1))
-    return tuple(split_line)
+    numerical_line = [] #Try to convert each entry to an integer (if possible)
+    for x in split_line:
+        try:
+            #Check if x has a value, then try to make it an integer.
+            x = int(x) if x else x
+        except ValueError:
+            pass
+        numerical_line.append(x)
+    return tuple(numerical_line)
