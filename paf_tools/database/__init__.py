@@ -8,7 +8,7 @@ from sqlalchemy import create_engine, MetaData
 from sqlalchemy.orm import sessionmaker
 from paf_tools.database import tables
 
-engine = create_engine('sqlite:////home/daniel/PAF/database.db')
+engine = create_engine('sqlite:///./paf-tools.db')
 tables.Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 

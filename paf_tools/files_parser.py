@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """Parser module.
 
 Contains tools for parsing the various PAF Mainfile component files.
