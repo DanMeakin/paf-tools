@@ -3,14 +3,83 @@
 Defines the SQLAlchemy tables as declarative_base classes. 
 
 """
-from sqlalchemy import Column, Integer, String, Sequence, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy import Column, Integer, String, Sequence, Boolean
+from paf_tools.database import Base
 from paf_tools.database.operations import format_address
 
-#Use the declarative base to create database tables and fields.
-Base = declarative_base()
+class Address(Base):
+    __tablename__ = "addresses"
 
+    id = Column(Integer, Sequence('user_id_seq'), primary_key=True)
+    sub_building_name = Column(String(30))
+    building_name = Column(String(50))
+    building_number = Column(Integer)
+    dependent_thoroughfare = Column(String(80))
+    thoroughfare = Column(String(80))
+    postcode = Column(String(7))
+    double_dependent_locality = Column(String(35))
+    dependent_locality = Column(String(35))
+    town = Column(String(30))
+    department = Column(String(60))
+    organisation = Column(String(60))
+    concatenation_indicator = Column(Boolean)
+    po_box_num = Column(String(6))
+
+    def __init__(self, **address):
+        """Initialise AddressFlat class.
+
+        Takes an address_components kwargs, and then
+        populates the instance with the text details from each.
+
+        """
+        self.sub_building_name = address.get('sub-building name','')
+        self.building_name = address.get('building name', '')
+        self.building_number = address.get('building number', '')
+        self.dependent_thoroughfare = address.get('dependent thoroughfare', '')
+        self.thoroughfare = address.get('thoroughfare', '')
+        self.postcode = address.get('postcode', '')
+        self.double_dependent_locality = address.get('double dependent locality', '')
+        self.dependent_locality = address.get('dependent locality', '')
+        self.town = address.get('post town', '')
+        self.department = address.get('department name', '')
+        self.organisation = address.get('organisation name', '')
+        self.concatenation_indicator = address.get('concatenation indicator', False)
+        self.po_box_num = address.get('po box', '')
+
+    def __repr__(self):
+        return "<Address: {}>".format(
+                format_address(**self._get_elements()).replace('\n', ', ')
+                )
+
+    def __str__(self):
+        """String representation of Address."""
+        return format_address(**self._get_elements()) 
+
+    def _get_elements(self):
+        """Get address elements for string representation."""
+        address_elements = {
+                'organisation': "{}{}".format(
+                                self.organisation if self.organisation else "",
+                                '\n' + self.department if self.department else "",
+                                ),
+                'sub-building name': self.sub_building_name,
+                'building name': self.building_name,
+                'building number': self.building_number,
+                'PO box': self.po_box_num,
+                'dependent thoroughfare': self.dependent_thoroughfare,
+                'thoroughfare': self.thoroughfare,
+                'double dependent locality': self.double_dependent_locality,
+                'dependent locality': self.dependent_locality,
+                'town': self.town,
+                'postcode': "{} {}".format(
+                    self.postcode[:-3], 
+                    self.postcode[-3:]
+                    ),
+                'concatenation indicator': self.concatenation_indicator
+                }
+        return address_elements
+
+"""
 class Address(Base):
     __tablename__ = "addresses"
 
@@ -111,13 +180,9 @@ class Address(Base):
                 )
 
     def __str__(self):
-        """String representation of Address.
-
-               """
         return format_address(**self._get_elements()) 
 
     def _get_elements(self):
-        """Get address elements for string representation."""
         address_elements = {
                 'organisation': str(self.organisation) 
                                 if self.organisation else None,
@@ -141,6 +206,9 @@ class Address(Base):
                     self.postcode[:-3], 
                     self.postcode[-3:]
                     ),
+                'concatenation indicator': str(self.concatenation_indicator)
+                                           if self.concatenation_indicator
+                                           else None,
                 }
         return address_elements
 
@@ -303,3 +371,4 @@ class ThoroughfareDescriptor(Base):
 
     def __str__(self):
         return self.thoroughfare_descriptor.title()
+"""

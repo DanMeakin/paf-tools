@@ -34,6 +34,18 @@ These may change, so this module makes it trivial to implement changes
 to filenames.
 
 """
+###########################
+# FILETYPES AND DATATYPES #
+###########################
+VALID_FILETYPES = [
+        'ADDRESS', 'BUILDING_NAME', 'LOCALITY', 'MAILSORT', 
+        'ORGANISATION', 'SUB_BUILDING_NAME', 'THOROUGHFARE', 
+        'THOROUGHFARE_DESCRIPTOR', #'WELSH_ADDRESS'
+        ]
+VALID_DATATYPES = [
+        'FILENAME', 'COMPONENTS'
+        ]
+
 ########################
 # FILENAME DEFINITIONS #
 ########################
